@@ -1,0 +1,16 @@
+{
+    "private": true,
+    "scripts": {
+        "start": "nest start --watch"
+    },
+    "dependencies": {
+        "@nestjs/cli": "^9.4.2",
+        "@nestjs/common": "^9.4.0",
+        "@nestjs/config": "^2.3.1",
+        "@nestjs/core": "^9.4.0",
+        "@nestjs/platform-express": "^9.4.0",
+        "@nestjs/platform-fastify": "^9.4.0",
+        "@types/node": "^18.16.3",
+        "reflect-metadata": "^0.1.13"
+    }
+}

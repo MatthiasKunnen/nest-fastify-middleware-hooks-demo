@@ -1,0 +1,24 @@
+# IntelliJ
+.idea
+.idea/
+.idea/*
+*.iml
+*.ipr
+*.iws
+
+# OSX
+.DS_Store
+
+# Windows
+Thumbs.db
+
+node_modules/
+.yarn
+yarn-error.log
+
+dist/
+*.min.*
+.env
+*.local.*
+
+.eslintcache
