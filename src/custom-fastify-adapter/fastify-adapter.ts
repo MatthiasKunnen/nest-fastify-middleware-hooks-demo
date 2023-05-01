@@ -89,20 +89,11 @@ type VersionedRoute<TRequest, TResponse> = ((
 };
 
 /**
- * The following type assertion is valid as we enforce "middie" plugin registration
- * which enhances the FastifyRequest.RawRequest with the "originalUrl" property.
- * ref https://github.com/fastify/middie/pull/16
- * ref https://github.com/fastify/fastify/pull/559
- */
-type FastifyRawRequest<TServer extends RawServerBase> =
-    RawRequestDefaultExpression<TServer> & { originalUrl?: string };
-
-/**
  * @publicApi
  */
 export class CustomFastifyAdapter<
     TServer extends RawServerBase = RawServerDefault,
-    TRawRequest extends FastifyRawRequest<TServer> = FastifyRawRequest<TServer>,
+    TRawRequest extends RawRequestDefaultExpression<TServer> = RawRequestDefaultExpression<TServer>,
     TRawResponse extends RawReplyDefaultExpression<TServer> = RawReplyDefaultExpression<TServer>,
     TRequest extends FastifyRequest<
         RequestGenericInterface,
@@ -128,7 +119,6 @@ export class CustomFastifyAdapter<
     }>>()
 
     private _isParserRegistered = false;
-    private isMiddieRegistered = false;
     private versioningOptions!: VersioningOptions;
     private readonly versionConstraint = {
         name: 'version',
@@ -261,13 +251,6 @@ export class CustomFastifyAdapter<
         })
 
         this.setInstance(instance);
-    }
-
-    public async init() {
-        if (this.isMiddieRegistered) {
-            return;
-        }
-        await this.registerMiddie();
     }
 
     public listen(port: string | number, callback?: () => void): void;
@@ -587,9 +570,6 @@ export class CustomFastifyAdapter<
     public async createMiddlewareFactory(
         requestMethod: RequestMethod,
     ): Promise<(path: string, callback: Function) => any> {
-        if (!this.isMiddieRegistered) {
-            await this.registerMiddie();
-        }
         return (path: string, callback: Function) => {
             let normalizedPath = this.normalizePath(path);
 
@@ -664,15 +644,8 @@ export class CustomFastifyAdapter<
         );
     }
 
-    private async registerMiddie() {
-        this.isMiddieRegistered = true;
-        await this.register(
-            import('@fastify/middie') as Parameters<TInstance['register']>[0],
-        );
-    }
-
     private getRequestOriginalUrl(rawRequest: TRawRequest) {
-        return rawRequest.originalUrl || rawRequest.url;
+        return rawRequest.url;
     }
 
     private injectConstraintsIfVersioned(
