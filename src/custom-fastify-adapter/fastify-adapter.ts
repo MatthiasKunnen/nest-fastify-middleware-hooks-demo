@@ -28,6 +28,8 @@ import {
     FastifyReply,
     FastifyRequest,
     FastifyServerOptions,
+    HTTPMethods,
+    preHandlerHookHandler,
     RawReplyDefaultExpression,
     RawRequestDefaultExpression,
     RawServerBase,
@@ -119,6 +121,11 @@ export class CustomFastifyAdapter<
     > = FastifyInstance<TServer, TRawRequest, TRawResponse>,
 > extends AbstractHttpAdapter<TServer, TRequest, TReply> {
     declare protected readonly instance: TInstance;
+
+    private readonly handlersToRegister = new Map<string, Array<{
+        callback: preHandlerHookHandler<TServer, TRawRequest, TRawResponse>,
+        method: RequestMethod,
+    }>>()
 
     private _isParserRegistered = false;
     private isMiddieRegistered = false;
@@ -216,14 +223,43 @@ export class CustomFastifyAdapter<
         super();
 
         const instance =
-            instanceOrOptions && (instanceOrOptions as TInstance).server
+            instanceOrOptions && 'server' in instanceOrOptions
                 ? instanceOrOptions
                 : fastify({
                     constraints: {
                         version: this.versionConstraint as any,
                     },
                     ...(instanceOrOptions as FastifyServerOptions),
-                });
+                }) as unknown as TInstance; // Cast required due to complex type inconsistency
+
+        instance.addHook('onRoute', (routeOptions) => {
+            const path = this.normalizePath(routeOptions.path);
+            const handlers = this.handlersToRegister.get(path)
+            if (handlers === undefined) {
+                return
+            }
+
+            const handlersToAttach = handlers
+                .filter(handler => this.nestMethodMatchesFastify(handler.method, routeOptions.method))
+                .map(handler => handler.callback)
+
+            if (handlersToAttach.length > 0) {
+                if (routeOptions.preHandler === undefined) {
+                    // No existing preHandler
+                    routeOptions.preHandler = handlersToAttach;
+                } else if (Array.isArray(routeOptions.preHandler)) {
+                    // Append existing array of preHandlers
+                    routeOptions.preHandler.push(...handlersToAttach);
+                } else {
+                    // Append existing single preHandler
+                    routeOptions.preHandler = [
+                        routeOptions.preHandler,
+                        ...handlersToAttach,
+                    ];
+                }
+            }
+        })
+
         this.setInstance(instance);
     }
 
@@ -555,19 +591,19 @@ export class CustomFastifyAdapter<
             await this.registerMiddie();
         }
         return (path: string, callback: Function) => {
-            let normalizedPath = path.endsWith('/*')
-                ? `${path.slice(0, -1)}(.*)`
-                : path;
+            let normalizedPath = this.normalizePath(path);
 
-            // Fallback to "(.*)" to support plugins like GraphQL
-            normalizedPath = normalizedPath === '/(.*)' ? '(.*)' : normalizedPath;
+            const handler = {
+                method: requestMethod,
+                callback: callback as preHandlerHookHandler<TServer, TRawRequest, TRawResponse>,
+            }
 
-            // The following type assertion is valid as we use import('@fastify/middie') rather than require('@fastify/middie')
-            // ref https://github.com/fastify/middie/pull/55
-            this.instance.use(
-                normalizedPath,
-                callback as Parameters<TInstance['use']>['1'],
-            );
+            const handlerToRegister = this.handlersToRegister.get(normalizedPath);
+            if (handlerToRegister === undefined) {
+                this.handlersToRegister.set(normalizedPath, [handler])
+            } else {
+                handlerToRegister.push(handler);
+            }
         };
     }
 
@@ -672,5 +708,49 @@ export class CustomFastifyAdapter<
                 RouteShorthandMethod<TServer, TRawRequest, TRawResponse>
             >),
         );
+    }
+
+    /**
+     * Returns true if the given nest method matches any of the given fastify methods. False
+     * otherwise.
+     */
+    private nestMethodMatchesFastify(
+        nestMethod: RequestMethod,
+        fastifyMethods: HTTPMethods | Array<HTTPMethods>,
+    ): boolean {
+        if (!Array.isArray(fastifyMethods)) {
+            fastifyMethods = [fastifyMethods];
+        }
+
+        switch (nestMethod) {
+            case RequestMethod.GET:
+                return fastifyMethods.includes('GET');
+            case RequestMethod.POST:
+                return fastifyMethods.includes('POST');
+            case RequestMethod.PUT:
+                return fastifyMethods.includes('PUT');
+            case RequestMethod.DELETE:
+                return fastifyMethods.includes('DELETE');
+            case RequestMethod.HEAD:
+                return fastifyMethods.includes('HEAD');
+            case RequestMethod.PATCH:
+                return fastifyMethods.includes('PATCH');
+            case RequestMethod.ALL:
+                return true;
+            case RequestMethod.OPTIONS:
+                return fastifyMethods.includes('OPTIONS');
+        }
+    }
+
+    /**
+     * Normalize paths to make them easier to compare. This is needed because Nest paths are
+     * occasionally have a trailing slash while fastify does not do this except for the root.
+     */
+    private normalizePath(path: string): string {
+        if (path.endsWith('/')) {
+            return path.slice(0, -1)
+        }
+
+        return path;
     }
 }

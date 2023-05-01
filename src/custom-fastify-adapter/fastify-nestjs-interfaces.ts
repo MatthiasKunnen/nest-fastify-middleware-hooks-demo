@@ -1,3 +1,7 @@
+/**
+ * Unchanged from https://github.com/nestjs/nest/tree/master/packages/platform-fastify/interfaces
+ */
+
 import type { AddContentTypeParser } from 'fastify';
 
 export type NestFastifyBodyParserOptions = Omit<

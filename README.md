@@ -42,9 +42,14 @@ Given the following routes: `/a`, `/a/b`, and `/a/b/c`, requesting `/a/b/c` resu
 See [src/abc.controller.ts](./src/abc.controller.ts).
 
 ## The cause
-This behavior is intended for middie which is used by fastify. Instead, hooks should be used. 
+This behavior is intended for [middie](https://github.com/fastify/middie/) which is used by fastify. Instead, hooks should be used. 
 See this issue: <https://github.com/fastify/middie/issues/113>.
 
 References:
 - [Fastify middleware](https://www.fastify.io/docs/latest/Reference/Middleware/)
 - [Fastify hooks](https://www.fastify.io/docs/latest/Reference/Hooks/)
+
+## A proposed solution
+I have created a modified [`CustomFastifyAdapter`](./src/custom-fastify-adapter/fastify-adapter.ts) to use hooks instead of middie, this solves both problems.
+
+Middie could be made entirely optional though it might still be required for express middleware. 
