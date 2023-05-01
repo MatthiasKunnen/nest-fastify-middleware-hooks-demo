@@ -34,9 +34,11 @@ import {
     RawServerDefault,
     RequestGenericInterface,
 } from 'fastify';
+// @ts-ignore
 import * as Reply from 'fastify/lib/reply';
+// @ts-ignore
 import { kRouteContext } from 'fastify/lib/symbols';
-import { RouteShorthandMethod } from 'fastify/types/route';
+import {RouteGenericInterface, RouteShorthandMethod} from 'fastify/types/route';
 import * as http2 from 'http2';
 import * as https from 'https';
 import {
@@ -116,11 +118,11 @@ export class CustomFastifyAdapter<
         TRawResponse
     > = FastifyInstance<TServer, TRawRequest, TRawResponse>,
 > extends AbstractHttpAdapter<TServer, TRequest, TReply> {
-    protected readonly instance: TInstance;
+    declare protected readonly instance: TInstance;
 
-    private _isParserRegistered: boolean;
-    private isMiddieRegistered: boolean;
-    private versioningOptions: VersioningOptions;
+    private _isParserRegistered = false;
+    private isMiddieRegistered = false;
+    private versioningOptions!: VersioningOptions;
     private readonly versionConstraint = {
         name: 'version',
         validate(value: unknown) {
@@ -135,7 +137,13 @@ export class CustomFastifyAdapter<
             return {
                 get(version: string | Array<string>) {
                     if (Array.isArray(version)) {
-                        return versions.get(version.find(v => versions.has(v))) || null;
+                        const foundVersion = version.find(v => versions.has(v))
+
+                        if (foundVersion === undefined) {
+                            return null
+                        }
+
+                        return versions.get(foundVersion) ?? null;
                     }
                     return versions.get(version) || null;
                 },
@@ -369,7 +377,11 @@ export class CustomFastifyAdapter<
     }
 
     public end(response: TReply, message?: string) {
-        response.raw.end(message);
+        if (message === undefined) {
+            response.raw.end();
+        } else {
+            response.raw.end(message);
+        }
     }
 
     public render(
@@ -413,6 +425,9 @@ export class CustomFastifyAdapter<
     public inject(
         opts?: InjectOptions | string,
     ): LightMyRequestChain | Promise<LightMyRequestResponse> {
+        if (opts === undefined) {
+            throw new Error('Opts is undefined in inject')
+        }
         return this.instance.inject(opts);
     }
 
@@ -421,7 +436,7 @@ export class CustomFastifyAdapter<
             return await this.instance.close();
         } catch (err) {
             // Check if server is still running
-            if (err.code !== 'ERR_SERVER_NOT_RUNNING') {
+            if ((err as any).code !== 'ERR_SERVER_NOT_RUNNING') {
                 throw err;
             }
             return;
@@ -469,12 +484,12 @@ export class CustomFastifyAdapter<
     }
 
     public getRequestMethod(request: TRequest): string {
-        return request.raw ? request.raw.method : request.method;
+        return request.raw?.method ? request.raw.method : request.method;
     }
 
     public getRequestUrl(request: TRequest): string;
     public getRequestUrl(request: TRawRequest): string;
-    public getRequestUrl(request: TRequest & TRawRequest): string {
+    public getRequestUrl(request: TRequest & TRawRequest): string | undefined {
         return this.getRequestOriginalUrl(request.raw || request);
     }
 
@@ -511,7 +526,7 @@ export class CustomFastifyAdapter<
             type,
             parserOptions,
             (
-                req: RawBodyRequest<FastifyRequest<unknown, TServer, TRawRequest>>,
+                req: RawBodyRequest<FastifyRequest<RouteGenericInterface, TServer, TRawRequest>>,
                 body: Buffer,
                 done,
             ) => {

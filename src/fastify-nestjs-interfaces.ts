@@ -20,7 +20,6 @@ import {
     InjectOptions,
     Response as LightMyRequestResponse,
 } from 'light-my-request';
-import {FastifyViewOptions} from '@nestjs/platform-fastify/interfaces/external';
 import { Stats } from 'fs';
 
 interface ExtendedInformation {
