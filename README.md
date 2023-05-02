@@ -51,5 +51,6 @@ References:
 
 ## A proposed solution
 I have created a modified [`CustomFastifyAdapter`](./src/custom-fastify-adapter/fastify-adapter.ts) to use hooks instead of middie, this solves both problems.
+This adapter can be tested by editing [main.ts](./src/main.ts).
 
 Middie could be made entirely optional though it might still be required for express middleware. 
