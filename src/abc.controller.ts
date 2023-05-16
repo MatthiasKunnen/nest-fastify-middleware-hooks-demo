@@ -1,29 +1,30 @@
-import {Controller, Get} from '@nestjs/common';
+import {Controller, Get, Request} from '@nestjs/common';
+import {RequestMaybeMiddleware, validateMiddlewareExecution} from './validation';
 
 @Controller()
 export class AbcController {
 
     @Get('/a')
-    async a() {
-        return {
-            message: 'Should execute middleware once',
-            controller: AbcController.name,
-        };
+    async a(@Request() request: RequestMaybeMiddleware) {
+        return validateMiddlewareExecution({
+            request,
+            expectedExecutionAmount: 1,
+        });
     }
 
     @Get('/a/b')
-    async ab() {
-        return {
-            message: 'Should execute middleware once',
-            controller: AbcController.name,
-        };
+    async ab(@Request() request: RequestMaybeMiddleware) {
+        return validateMiddlewareExecution({
+            request,
+            expectedExecutionAmount: 1,
+        });
     }
 
     @Get('/a/b/c')
-    async abc() {
-        return {
-            message: 'Should execute middleware once',
-            controller: AbcController.name,
-        };
+    async abc(@Request() request: RequestMaybeMiddleware) {
+        return validateMiddlewareExecution({
+            request,
+            expectedExecutionAmount: 1,
+        });
     }
 }

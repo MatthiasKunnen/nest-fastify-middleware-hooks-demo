@@ -9,10 +9,39 @@ Running this demo:
 
 ## Repo scenario
 The scenario in this repo is as follows:
-- `SubrouteController` has two routes; `/subroute` and `/subroute/yes`
-- `SubrouteNoController` has one route; `/subroute/no`
-- `AbcController` has three routes; `/a`, `/a/b`, and `/a/b/c`
-- Middleware that logs the request URL is applied to `SubrouteController` and `AbcController`
+```
+SubRouteController (middleware applied)
+├── /subroute
+└── /subroute/yes
+
+SubRouteNoController
+└── /subroute/no
+
+SimilarRoutesController (middleware applied)
+├── /similar/test
+└── /similar/:id
+
+AbcController (middleware applied)
+├── /a
+├── /a/b
+└── /a/b/c
+
+TestResultsController
+└── / (Shows the result of every route)
+```
+
+### Test results for all adapters
+| Path          | Expected | Express | Fastify | CustomFastify |
+|---------------|---------:|--------:|--------:|--------------:|
+| /subroute     |        1 |       1 |       1 |             1 |
+| /subroute/no  |        0 |       0 |       1 |             0 |
+| /subroute/yes |        1 |       1 |       2 |             1 |
+| /similar/test |        1 |       2 |       2 |             1 |
+| /similar/123  |        1 |       1 |       1 |             1 |
+| /a            |        1 |       1 |       1 |             1 |
+| /a/b          |        1 |       1 |       2 |             1 |
+| /a/b/c        |        1 |       1 |       3 |             1 |
+
 
 ## Problems in the existing fastify-adapter
 
@@ -22,7 +51,7 @@ Registering middleware on a controller that has a `/` route, will lead to that m
 This is not a problem using the express adapter.
 
 #### Test this
-1. Go to `/subroute/no` and observe the logs. _middleware executed /about_ will be logged
+1. Go to `/subroute/no`
 1. (optional) Use the `express` adapter in `main.ts`, the middleware will not
    be executed
 

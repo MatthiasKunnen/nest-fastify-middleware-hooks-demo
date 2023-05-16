@@ -1,4 +1,5 @@
-import {Controller, Get} from '@nestjs/common';
+import {Controller, Get, Request} from '@nestjs/common';
+import {RequestMaybeMiddleware, validateMiddlewareExecution} from '../validation';
 
 @Controller()
 export class SubrouteNoController {
@@ -8,10 +9,10 @@ export class SubrouteNoController {
      * trigger it (see {@see SubrouteController}).
      */
     @Get('/subroute/no')
-    async no() {
-        return {
-            message: 'Middleware should not execute',
-            controller: SubrouteNoController.name,
-        };
+    async no(@Request() request: RequestMaybeMiddleware) {
+        return validateMiddlewareExecution({
+            request,
+            expectedExecutionAmount: 0,
+        });
     }
 }

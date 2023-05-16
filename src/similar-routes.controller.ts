@@ -1,4 +1,5 @@
-import {Controller, Get} from '@nestjs/common';
+import {Controller, Get, Request} from '@nestjs/common';
+import {RequestMaybeMiddleware, validateMiddlewareExecution} from './validation';
 
 /**
  * Set up the routes to the same scenario as reported in
@@ -13,21 +14,21 @@ export class SimilarRoutesController {
      * Visiting /similar/test route should trigger the middleware only once.
      */
     @Get('test')
-    async test() {
-        return {
-            message: 'Should execute middleware once',
-            controller: SimilarRoutesController.name,
-        };
+    async test(@Request() request: RequestMaybeMiddleware) {
+        return validateMiddlewareExecution({
+            request,
+            expectedExecutionAmount: 1,
+        });
     }
 
     /**
      * Visiting `/similar/:id` route should trigger the middleware once.
      */
     @Get(':id')
-    async id() {
-        return {
-            message: 'Should execute middleware once',
-            controller: SimilarRoutesController.name,
-        };
+    async id(@Request() request: RequestMaybeMiddleware) {
+        return validateMiddlewareExecution({
+            request,
+            expectedExecutionAmount: 1,
+        });
     }
 }

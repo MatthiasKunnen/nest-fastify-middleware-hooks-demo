@@ -1,5 +1,6 @@
 import {Injectable, NestMiddleware} from '@nestjs/common';
-import {AbstractHttpAdapter, HttpAdapterHost} from '@nestjs/core';
+import {HttpAdapterHost} from '@nestjs/core';
+import {RequestInMiddleware} from './validation';
 
 @Injectable()
 export class Middleware implements NestMiddleware {
@@ -9,8 +10,13 @@ export class Middleware implements NestMiddleware {
     ) {
     }
 
-    use(request: any, reply: any, next: () => void) {
-        request.
+    use(request: RequestInMiddleware, reply: any, next: () => void) {
+        if (request.middlewareExecutionCount === undefined) {
+            request.middlewareExecutionCount = 1
+        } else {
+            request.middlewareExecutionCount++;
+        }
+
         console.log(JSON.stringify({
             message: 'Middleware executed',
             fullUrl: this.httpAdapterHost.httpAdapter.getRequestUrl(request),

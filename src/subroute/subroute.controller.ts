@@ -1,4 +1,5 @@
-import {Controller, Get} from '@nestjs/common';
+import {Controller, Get, Request} from '@nestjs/common';
+import {RequestMaybeMiddleware, validateMiddlewareExecution} from '../validation';
 
 @Controller('/subroute')
 export class SubrouteController {
@@ -7,11 +8,11 @@ export class SubrouteController {
      * Visiting /subroute route should trigger the middleware.
      */
     @Get()
-    async test() {
-        return {
-            message: 'Should execute middleware once',
-            controller: SubrouteController.name,
-        };
+    async test(@Request() request: RequestMaybeMiddleware) {
+        return validateMiddlewareExecution({
+            request,
+            expectedExecutionAmount: 1,
+        });
     }
 
     /**
@@ -19,10 +20,10 @@ export class SubrouteController {
      * (see {@see SubrouteNoController}).
      */
     @Get('/yes')
-    async yes() {
-        return {
-            message: 'Should execute middleware once',
-            controller: SubrouteController.name,
-        };
+    async yes(@Request() request: RequestMaybeMiddleware) {
+        return validateMiddlewareExecution({
+            request,
+            expectedExecutionAmount: 1,
+        });
     }
 }
