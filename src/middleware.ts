@@ -9,7 +9,8 @@ export class Middleware implements NestMiddleware {
     ) {
     }
 
-    async use(request: any, reply: any, next: () => void): Promise<any> {
+    use(request: any, reply: any, next: () => void) {
+        request.
         console.log(JSON.stringify({
             message: 'Middleware executed',
             fullUrl: this.httpAdapterHost.httpAdapter.getRequestUrl(request),
