@@ -45,6 +45,10 @@ export class TestResultsController {
                     color: inherit;
                 }
                 
+                table {
+                    font-size: inherit;
+                }
+
                 table td, table th {
                     text-align: left;
                     padding: 0.5em;
