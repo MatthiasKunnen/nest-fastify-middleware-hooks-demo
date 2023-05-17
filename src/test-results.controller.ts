@@ -90,16 +90,17 @@ export class TestResultsController {
                     <th>Notes</th>
                 </tr>
                 ${results.map(([route, response]) => {
+                    const cssClass = response.success ? 'success' : 'fail'
                     return `
                         <tr>
-                            <td class="${response.success ? 'success' : 'fail'}">
+                            <td class="${cssClass}">
                                 <a href="${route}">${route}</a>
                             </td>
-                            <td class="${response.success ? 'success' : 'fail'}">
+                            <td class="${cssClass}">
                                 ${response.success ? 'PASS' : 'FAIL'}
                             </td>
                             <td>${response.expected}</td>
-                            <td class="${response.success ? 'success' : 'fail'}">
+                            <td class="${cssClass}">
                                 ${response.actual}
                             </td>
                             <td>${response.notes ?? ''}</td>
