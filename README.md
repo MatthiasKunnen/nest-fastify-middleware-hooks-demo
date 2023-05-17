@@ -5,6 +5,7 @@
 Running this demo:
 1. `yarn install`
 1. `yarn run start`
+1. Go to `/` path, you see the results of fetching every route.
 
 
 ## Repo scenario
@@ -51,7 +52,7 @@ Registering middleware on a controller that has a `/` route, will lead to that m
 This is not a problem using the express adapter.
 
 #### Test this
-1. Go to `/subroute/no`
+1. Go to `/subroute/no` or view the results on `/`
 1. (optional) Use the `express` adapter in `main.ts`, the middleware will not
    be executed
 

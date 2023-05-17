@@ -5,6 +5,7 @@ import {FastifyAdapter} from '@nestjs/platform-fastify';
 import fastify from 'fastify';
 import {AppModule} from './app.module';
 import {CustomFastifyAdapter} from './custom-fastify-adapter/fastify-adapter';
+import {PORT} from './env';
 
 async function bootstrap() {
     // const adapter = new CustomFastifyAdapter();
@@ -16,7 +17,8 @@ async function bootstrap() {
         adapter,
     );
 
-    await app.listen(5546);
+    await app.listen(PORT);
+    console.log('Server is listening on port ' + PORT)
 }
 
 bootstrap().catch(error => {

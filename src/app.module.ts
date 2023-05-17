@@ -4,6 +4,7 @@ import {AbcController} from './abc.controller';
 import {SubrouteController} from './subroute/subroute.controller';
 import {SubrouteNoController} from './subroute/subroute-no.controller';
 import {SimilarRoutesController} from './similar-routes.controller';
+import {TestResultsController} from './test-results.controller';
 
 @Module({
     controllers: [
@@ -11,6 +12,7 @@ import {SimilarRoutesController} from './similar-routes.controller';
         SimilarRoutesController,
         SubrouteController,
         SubrouteNoController,
+        TestResultsController,
     ]
 })
 export class AppModule  implements NestModule {
