@@ -41,6 +41,7 @@ export class TestResultsController {
                 }
                 
                 a {
+                    border-bottom: 1px solid;
                     text-decoration: none;
                     color: inherit;
                 }
