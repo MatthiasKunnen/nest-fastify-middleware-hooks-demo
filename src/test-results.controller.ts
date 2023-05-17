@@ -56,6 +56,9 @@ export class TestResultsController {
             </style>
             <h1>Results for ${httpAdapterInUse}</h1>
             <p>
+                The active adapter can be changed in main.ts.
+            </p>
+            <p>
                 This table shows how many times the middleware has been called when the route in the
                 first column is fetched.
             </p>
