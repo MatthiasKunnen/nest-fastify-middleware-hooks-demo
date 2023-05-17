@@ -39,13 +39,13 @@ export class TestResultsController {
                 body {
                     font-family: ui-monospace, monospace;
                 }
-                
+
                 a {
                     border-bottom: 1px solid;
                     text-decoration: none;
                     color: inherit;
                 }
-                
+
                 table {
                     font-size: inherit;
                 }
@@ -54,7 +54,7 @@ export class TestResultsController {
                     text-align: left;
                     padding: 0.5em;
                 }
-                
+
                 .fail {
                     color: red;
                 }
@@ -77,15 +77,19 @@ export class TestResultsController {
                 </tr>
                 ${results.map(([route, response]) => {
                     return `
-                    <tr>
-                        <td class="${response.success ? 'success' : 'fail'}">
-                            <a href="${route}">${route}</a>
-                        </td>
-                        <td class="${response.success ? 'success' : 'fail'}">${response.success ? 'PASS' : 'FAIL'}</td>
-                        <td>${response.expected}</td>
-                        <td class="${response.success ? 'success' : 'fail'}">${response.actual}</td>
-                        <td>${response.notes ?? ''}</td>
-                    </tr>
+                        <tr>
+                            <td class="${response.success ? 'success' : 'fail'}">
+                                <a href="${route}">${route}</a>
+                            </td>
+                            <td class="${response.success ? 'success' : 'fail'}">
+                                ${response.success ? 'PASS' : 'FAIL'}
+                            </td>
+                            <td>${response.expected}</td>
+                            <td class="${response.success ? 'success' : 'fail'}">
+                                ${response.actual}
+                            </td>
+                            <td>${response.notes ?? ''}</td>
+                        </tr>
                     `
                 }).join('\n')}
             </table>
