@@ -5,7 +5,13 @@
 Running this demo:
 1. `yarn install`
 1. `yarn run start`
-1. Go to `/` path, you see the results of fetching every route.
+1. Open `/` in a browser. This page shows the results of fetching every route for the configured adapter.
+
+<figure>
+  <img src="img/fastify-result.png" alt="Fastify results"/>
+  <figcaption>Result for FastifyAdapter as shown when visiting `/`.</figcaption>
+</figure>
+
 
 
 ## Repo scenario
