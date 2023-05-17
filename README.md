@@ -8,11 +8,10 @@ Running this demo:
 1. Open `/` in a browser. This page shows the results of fetching every route for the configured adapter.
 
 <figure>
-  <img src="img/fastify-result.png" alt="Fastify results"/>
+  <img src="img/fastify-result-dark.png#gh-dark-mode-only" alt="Fastify results"/>
+  <img src="img/fastify-result-light.png#gh-light-mode-only" alt="Fastify results"/>
   <figcaption>Result for FastifyAdapter as shown when visiting `/`.</figcaption>
 </figure>
-
-
 
 ## Repo scenario
 The scenario in this repo is as follows:

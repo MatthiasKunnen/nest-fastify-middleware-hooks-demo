@@ -38,6 +38,8 @@ export class TestResultsController {
             <style>
                 body {
                     font-family: ui-monospace, monospace;
+                    background-color: #303030;
+                    color: white;
                 }
 
                 a {
@@ -56,7 +58,19 @@ export class TestResultsController {
                 }
 
                 .fail {
-                    color: red;
+                    color: #ff6464;
+                }
+
+                @media (prefers-color-scheme: light) {
+
+                    body {
+                        color: black;
+                        background-color: white;
+                    }
+
+                    .fail {
+                        color: #e80000;
+                    }
                 }
             </style>
             <h1>Results for ${httpAdapterInUse}</h1>
