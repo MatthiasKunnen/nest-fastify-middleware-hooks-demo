@@ -1,4 +1,9 @@
 # NestJs fastify middleware: Problems and solutions
+This has been fixed upstream, the Fastify and Express adapter both behave correctly and execute the
+middleware the same number of times. The code has been updated to reflect this.
+The original problem can be observed on branch
+[original-problem](https://github.com/MatthiasKunnen/nest-fastify-middleware-hooks-demo/tree/original-problem).
+
 Reported here <https://github.com/nestjs/nest/issues/11585>.
 
 ## Install instructions

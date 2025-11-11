@@ -1,14 +1,10 @@
 import {NestFactory} from '@nestjs/core';
-import {ExpressAdapter} from '@nestjs/platform-express';
 import {FastifyAdapter} from '@nestjs/platform-fastify';
 
-import fastify from 'fastify';
 import {AppModule} from './app.module';
-import {CustomFastifyAdapter} from './custom-fastify-adapter/fastify-adapter';
 import {PORT} from './env';
 
 async function bootstrap() {
-    // const adapter = new CustomFastifyAdapter();
     const adapter = new FastifyAdapter();
     // const adapter = new ExpressAdapter();
 

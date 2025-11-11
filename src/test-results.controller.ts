@@ -1,5 +1,4 @@
 import {Controller, Get, Header} from '@nestjs/common';
-import {fetch} from 'undici';
 import {ValidationResponse} from './validation';
 import {PORT} from './env';
 import {HttpAdapterHost} from '@nestjs/core';
